@@ -1,10 +1,13 @@
 import {useState, useEffect, useRef, memo} from 'react';
 import {Bodies, Body, Engine, Events, Render, Runner, World} from 'matter-js';
 import {FRUITS_BASE, FRUITS_HLW} from '../constants/fruits.js';
+import {useRecoilState} from "recoil";
+import {scoreState} from "../stores/Game.js";
 
 const Game = memo(() => {
     const containerRef = useRef();
     const canvasRef = useRef();
+    const [score, setScore] = useRecoilState(scoreState);
     const [THEME, setTheme] = useState('base');
     const [FRUITS, setFruits] = useState(THEME === 'base' ? FRUITS_BASE : FRUITS_HLW);
     const engine = Engine.create();
@@ -44,12 +47,8 @@ const Game = memo(() => {
     World.add(world, [leftWall, rightWall, ground, topLine]);
 
     /** 컴포넌트가 마운트될 때 초기 과일 추가 **/
-    const addFruit = () => {
-        /**
+    const addFruit = (isRender = false) => {
         const index = Math.floor(Math.random() * 5);
-        /*/
-        const index = 9;
-        /**/
         const fruit = FRUITS[index];
         const body = Bodies.circle(300, 50, fruit.radius, {
             index: index,
@@ -101,9 +100,7 @@ const Game = memo(() => {
 
     useEffect(() => {
         const handleKeyDown = (event) => {
-            if (disableAction) {
-                return;
-            }
+            if (disableAction) return;
 
             switch (event.code) {
                 case 'KeyA':
@@ -133,7 +130,7 @@ const Game = memo(() => {
                     currentBody.isSleeping = false;
                     disableAction = true;
                     setTimeout(() => {
-                        addFruit();
+                        addFruit(true);
                         disableAction = false;
                     }, 1000);
                     break;
