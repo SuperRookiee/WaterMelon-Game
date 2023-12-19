@@ -9,6 +9,13 @@ React와 자바스크립트로 만든 간단한 웹 게임입니다. 이 프로�
 ![WaterMelonGamePlaying](https://github.com/SuperRookiee/WaterMelon-Game/assets/89756426/cef9c8be-c949-4f77-b5c1-97b27ce6ad7e)
 
 ## 기술 스택
-
 - React
 - 자바스크립트
+
+## Run
+```
+git clone https://github.com/SuperRookiee/WaterMelon-Game.git
+cd WaterMelon-Game
+yarn install
+yarn run dev
+```
