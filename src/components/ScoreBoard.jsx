@@ -1,14 +1,16 @@
 import sb from "../assets/scss/ScoreBoard.module.scss";
-import {useRecoilValue} from "recoil";
-import {scoreState} from "../stores/Game.js";
 
-const ScoreBoard = () => {
-    const score = useRecoilValue(scoreState);
+const ScoreBoard = ({ score }) => {
 
     return (
         <section>
             <h1 id={sb.title}>수박 게임</h1>
-            <span>score : {score}</span>
+            <p>score : {score}</p>
+            <div className={sb.score}>
+                {Array.from({ length: 30 }, (_, index) => (
+                    <div key={index}>Score {index}</div>
+                ))}
+            </div>
         </section>
     );
 };

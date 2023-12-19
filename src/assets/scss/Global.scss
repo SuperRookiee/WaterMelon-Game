@@ -16,3 +16,14 @@
     width: calc(100% / 3);
   }
 }
+
+@media (max-width: 1000px) {
+  #water_melon {
+    flex-direction: column;
+    align-items: center;
+
+    & section {
+      width: 100%;
+    }
+  }
+}
