@@ -1,48 +1,63 @@
-import { useState, useEffect, memo } from 'react';
+import {useState, useEffect, useRef, memo} from 'react';
 import { Bodies, Body, Engine, Events, Render, Runner, World } from 'matter-js';
-import { FRUITS_BASE, FRUITS_HLW } from '../fruits';
-import '../assets/css/dark.css';
+import { FRUITS_BASE, FRUITS_HLW } from '../constants/fruits.js';
 
-const Game = () => {
+const Game = memo(() => {
+    const containerRef = useRef();
+    const canvasRef = useRef();
     const [THEME, setTheme] = useState('base');
     const [FRUITS, setFruits] = useState(THEME === 'halloween' ? FRUITS_HLW : FRUITS_BASE);
 
     const engine = Engine.create();
-    const render = Render.create({
-        engine,
-        element: document.body,
-        options: {
-            wireframes: false,
-            background: '#F7F4C8',
-            width: 620,
-            height: 850,
-        },
-    });
+
+    useEffect(() => {
+        const render = Render.create({
+            engine,
+            element: containerRef.current,
+            canvas: canvasRef.current,
+            options: {
+                wireframes: false,
+                background: '#F7F4C8',
+                width: 650,
+                height: 900,
+            },
+        });
+
+        containerRef.current.appendChild(render.canvas);
+        Render.run(render);
+        Runner.run(engine);
+
+        return () => {
+            Render.stop(render);
+            Runner.stop(engine.runner);
+            Engine.clear(engine);
+        };
+    }, [engine]);
 
     const world = engine.world;
 
-    const leftWall = Bodies.rectangle(15, 395, 30, 790, {
+    const leftWall = Bodies.rectangle(15, 395, 30, 950, {
         isStatic: true,
         render: {
             fillStyle: '#E6B143'
         },
     });
 
-    const rightWall = Bodies.rectangle(605, 395, 30, 790, {
+    const rightWall = Bodies.rectangle(635, 395, 30, 950, {
         isStatic: true,
         render: {
             fillStyle: '#E6B143'
         },
     });
 
-    const ground = Bodies.rectangle(310, 820, 620, 60, {
+    const ground = Bodies.rectangle(310, 885, 680, 30, {
         isStatic: true,
         render: {
             fillStyle: '#E6B143'
         },
     });
 
-    const topLine = Bodies.rectangle(310, 150, 620, 2, {
+    const topLine = Bodies.rectangle(310, 150, 675, 2, {
         name: 'topLine',
         isStatic: true,
         isSensor: true,
@@ -53,8 +68,6 @@ const Game = () => {
 
     World.add(world, [leftWall, rightWall, ground, topLine]);
 
-    Render.run(render);
-    Runner.run(engine);
 
     let currentBody = null;
     let currentFruit = null;
@@ -191,6 +204,12 @@ const Game = () => {
             Events.off(engine, 'collisionStart', handleCollision);
         };
     }, [disableAction, interval, currentBody, currentFruit, THEME, FRUITS, world, engine]);
-};
+
+    return (
+        <section ref={containerRef}>
+            <canvas ref={canvasRef} />
+        </section>
+    )
+});
 
 export default Game;
