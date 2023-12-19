@@ -1,9 +1,7 @@
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
+  color: rgba(255, 255, 255, 0.8);
   background-color: #242424;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -12,6 +10,7 @@
 
 #water_melon {
   display: flex;
+  padding: 0 0.5rem;
 
   & section {
     width: calc(100% / 3);
