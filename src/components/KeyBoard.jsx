@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import kb from '../assets/scss/Keyboard.module.scss';
 
 const KeyBoard = () => {

@@ -1,17 +1,16 @@
-import { useRecoilState } from "recoil";
-import { scoreState } from "./stores/Game";
+import {useRecoilValue} from "recoil";
+import {themeState} from "./stores/Game";
 import ScoreBoard from "./components/ScoreBoard";
 import Game from "./components/Game";
 import KeyBoard from "./components/KeyBoard";
 
 const App = () => {
-    const [score, setScore] = useRecoilState(scoreState);
-
+    const theme = useRecoilValue(themeState);
     return (
         <main id={`water_melon`}>
-            <ScoreBoard score={score} />
-            <Game setScore={setScore} />
-            <KeyBoard />
+            <ScoreBoard/>
+            <Game theme={theme}/>
+            <KeyBoard/>
         </main>
     );
 };

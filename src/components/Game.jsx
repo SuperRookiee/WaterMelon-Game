@@ -1,53 +1,35 @@
-import { useState, useEffect, useRef, memo } from 'react';
-import { Bodies, Body, Engine, Events, Render, Runner, World } from 'matter-js';
-import { FRUITS_BASE, FRUITS_HLW } from '../constants/fruits.js';
+import {memo, useEffect, useRef} from 'react';
+import {Bodies, Body, Engine, Events, Render, Runner, World} from 'matter-js';
+import {FRUITS_BASE, FRUITS_HLW} from '../constants/fruits.js';
+import {COLLISION_MAX_X, COLLISION_MIN_X, GAME_OPTION, GAME_WIDTH, WORLD_OPTION} from '../constants/option.js';
+import {useSetRecoilState} from 'recoil';
+import {scoreState} from '../stores/Game';
 
-const Game = memo(({ setScore }) => {
-    const size = window.innerWidth > 450 ? { width: 650, height: 800 } : { width: 350, height: 530 };
+const Game = memo(({theme}) => {
+    const setScoreState = useSetRecoilState(scoreState);
     const containerRef = useRef();
     const canvasRef = useRef();
-    const [THEME, setTheme] = useState('base');
-    const [FRUITS, setFruits] = useState(THEME === 'base' ? FRUITS_BASE : FRUITS_HLW);
+    const FRUITS = theme === 'base' ? FRUITS_BASE : FRUITS_HLW;
     const engine = Engine.create();
     const world = engine.world;
+    World.add(world, WORLD_OPTION);
 
-    /** 게임 환경 (x y 가로 세로) **/
-    const leftWall = Bodies.rectangle(10, size.height / 2, 20, size.height, {
-        isStatic: true,
-        render: { fillStyle: '#E6B143' },
-    });
-    const rightWall = Bodies.rectangle(size.width - 10, size.height / 2, 20, size.height, {
-        isStatic: true,
-        render: { fillStyle: '#E6B143' },
-    });
-    const ground = Bodies.rectangle(size.width / 2, size.height - 10, size.width, 20, {
-        isStatic: true,
-        render: { fillStyle: '#E6B143' },
-    });
-    const topLine = Bodies.rectangle(size.width / 2, size.height / 5, size.width - 10, 2, {
-        name: 'topLine',
-        isStatic: true,
-        isSensor: true,
-        render: { fillStyle: '#E6B143' },
-    });
-
-    World.add(world, [leftWall, rightWall, ground, topLine]);
-
+    /** 게임 진행가능 여부 **/
+    let disableAction = false;
     let currentBody = null;
     let currentFruit = null;
-    let disableAction = false;
     let interval = null;
 
     /** 컴포넌트가 마운트될 때 초기 과일 추가 **/
-    const addFruit = () => {
-        const index = 4;
+    const addFruit = (isFirst = true) => {
+        const index = Math.floor(Math.random() * (FRUITS_BASE.length / 2));
         const fruit = FRUITS[index];
-        const body = Bodies.circle(size.width / 2, size.height / 10, fruit.radius, {
+        const body = Bodies.circle(GAME_WIDTH / 2, 70, fruit.radius, {
             index: index,
             isSleeping: true,
             render: {
                 sprite: {
-                    texture: `${THEME}/${fruit.name}.png`
+                    texture: `${theme}/${fruit.name}.png`
                 },
             },
             restitution: 0.2,
@@ -55,8 +37,10 @@ const Game = memo(({ setScore }) => {
 
         currentBody = body;
         currentFruit = fruit;
-
         World.add(world, body);
+        if(isFirst === true) {
+            setScoreState((score) => score + 50);
+        }
     };
 
     useEffect(() => {
@@ -64,31 +48,17 @@ const Game = memo(({ setScore }) => {
             engine,
             element: containerRef.current,
             canvas: canvasRef.current,
-            options: {
-                wireframes: false,
-                background: '#F7F4C8',
-                width: size.width,
-                height: size.height,
-            },
+            options: GAME_OPTION,
         });
-        containerRef.current.appendChild(render.canvas);
+
         Render.run(render);
         Runner.run(engine);
 
         return () => {
             Render.stop(render);
-            Runner.stop(engine.runner);
             Engine.clear(engine);
         };
     }, [engine]);
-
-    useEffect(() => {
-        addFruit();
-    }, []);
-
-    useEffect(() => {
-        setFruits(THEME === 'base' ? FRUITS_BASE : FRUITS_HLW);
-    }, [THEME]);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -99,7 +69,7 @@ const Game = memo(({ setScore }) => {
                 case 'ArrowLeft':
                     if (interval) return;
                     interval = setInterval(() => {
-                        if (currentBody.position.x - currentFruit.radius > 30)
+                        if (currentBody.position.x - currentFruit.radius > COLLISION_MIN_X)
                             Body.setPosition(currentBody, {
                                 x: currentBody.position.x - 1,
                                 y: currentBody.position.y,
@@ -110,7 +80,7 @@ const Game = memo(({ setScore }) => {
                 case 'ArrowRight':
                     if (interval) return;
                     interval = setInterval(() => {
-                        if (currentBody.position.x + currentFruit.radius < 620)
+                        if (currentBody.position.x + currentFruit.radius < COLLISION_MAX_X)
                             Body.setPosition(currentBody, {
                                 x: currentBody.position.x + 1,
                                 y: currentBody.position.y,
@@ -122,9 +92,8 @@ const Game = memo(({ setScore }) => {
                     currentBody.isSleeping = false;
                     disableAction = true;
                     setTimeout(() => {
-                        addFruit(true);
+                        addFruit();
                         disableAction = false;
-                        setScore((prev) => prev + 100)
                     }, 1000);
                     break;
             }
@@ -156,38 +125,39 @@ const Game = memo(({ setScore }) => {
                         collision.collision.supports[0].x,
                         collision.collision.supports[0].y,
                         newFruit.radius, {
-                        render: {
-                            sprite: {
-                                texture: `${THEME}/${newFruit.name}.png`
+                            render: {
+                                sprite: {
+                                    texture: `${theme}/${newFruit.name}.png`
+                                },
                             },
-                        },
-                        index: index + 1,
-                    }
+                            index: index + 1,
+                        }
                     );
-                    setScore((prev) => prev + (index + 2) * 100)
                     World.add(world, newBody);
+                    setScoreState((score) => score + index * 100);
                 }
                 if (!disableAction && (collision.bodyA.name === 'topLine' || collision.bodyB.name === 'topLine')) {
                     alert('Game over');
+                    disableAction = true;
                 }
             });
         };
 
+        addFruit(false);
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
         Events.on(engine, 'collisionStart', handleCollision);
-
         return () => {
             /** 컴포넌트가 언마운트되거나 업데이트되기 전에 이벤트 핸들러 등록 해제 **/
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
             Events.off(engine, 'collisionStart', handleCollision);
         };
-    }, [disableAction, interval, currentBody, currentFruit, THEME, FRUITS, world, engine]);
+    }, [disableAction, interval, currentBody, currentFruit, FRUITS, world, engine]);
 
     return (
         <section ref={containerRef}>
-            <canvas ref={canvasRef} />
+            <canvas ref={canvasRef}/>
         </section>
     )
 });

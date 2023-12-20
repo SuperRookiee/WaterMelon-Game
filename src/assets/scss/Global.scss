@@ -8,7 +8,7 @@
   -webkit-font-smoothing: antialiased;
 }
 
-#water_melon {
+main {
   display: flex;
   padding: 0 0.5rem;
 
@@ -18,9 +18,10 @@
 }
 
 @media (max-width: 1000px) {
-  #water_melon {
+  main {
     flex-direction: column;
     align-items: center;
+    padding: 0;
 
     & section {
       width: 100%;
