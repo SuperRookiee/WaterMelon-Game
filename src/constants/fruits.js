@@ -12,18 +12,4 @@ const FRUITS_BASE = [
   { name: "watermelon", radius: 259 / 2 },
 ];
 
-const FRUITS_HLW = [
-  { name: "cherry", radius: 46 / 2 },
-  { name: "strawberry", radius: 55 / 2 },
-  { name: "grape", radius: 67 / 2 },
-  { name: "tangerine", radius: 81 / 2 },
-  { name: "orange", radius: 97 / 2 },
-  { name: "apple", radius: 117 / 2 },
-  { name: "pear", radius: 142 / 2 },
-  { name: "peach", radius: 171 / 2 },
-  { name: "pineapple", radius: 206 / 2 },
-  { name: "melon", radius: 249 / 2 },
-  { name: "pumpkin", radius: 300 / 2 },
-];
-
-export { FRUITS_BASE, FRUITS_HLW };
+export { FRUITS_BASE };

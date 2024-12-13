@@ -1,26 +1,27 @@
-import {memo, useEffect, useRef} from 'react';
-import {Bodies, Body, Engine, Events, Render, Runner, World} from 'matter-js';
-import {FRUITS_BASE, FRUITS_HLW} from '../constants/fruits.js';
-import {COLLISION_MAX_X, COLLISION_MIN_X, GAME_OPTION, GAME_WIDTH, WORLD_OPTION} from '../constants/option.js';
-import {useSetRecoilState} from 'recoil';
-import {scoreState} from '../stores/Game';
+import { memo, useEffect, useRef } from 'react';
+import { Bodies, Body, Engine, Events, Render, Runner, World } from 'matter-js';
+import { FRUITS_BASE } from '../constants/fruits.js'; // FRUITS_HLW 제거
+import { COLLISION_MAX_X, COLLISION_MIN_X, GAME_OPTION, GAME_WIDTH, WORLD_OPTION } from '../constants/option.js';
+import { useSetRecoilState } from 'recoil';
+import { scoreState } from '../stores/Game';
 
-const Game = memo(({theme}) => {
+const Game = memo(({ theme }) => {
     const setScoreState = useSetRecoilState(scoreState);
     const containerRef = useRef();
     const canvasRef = useRef();
-    const FRUITS = theme === 'base' ? FRUITS_BASE : FRUITS_HLW;
+
+    // 테마 상관 없이 FRUITS_BASE만 사용
+    const FRUITS = FRUITS_BASE;
+
     const engine = Engine.create();
     const world = engine.world;
     World.add(world, WORLD_OPTION);
 
-    /** 게임 진행가능 여부 **/
     let disableAction = false;
     let currentBody = null;
     let currentFruit = null;
     let interval = null;
 
-    /** 컴포넌트가 마운트될 때 초기 과일 추가 **/
     const addFruit = (isFirst = true) => {
         const index = Math.floor(Math.random() * (FRUITS_BASE.length / 2));
         const fruit = FRUITS[index];
@@ -38,7 +39,7 @@ const Game = memo(({theme}) => {
         currentBody = body;
         currentFruit = fruit;
         World.add(world, body);
-        if(isFirst === true) {
+        if (isFirst === true) {
             setScoreState((score) => score + 50);
         }
     };
@@ -69,22 +70,24 @@ const Game = memo(({theme}) => {
                 case 'ArrowLeft':
                     if (interval) return;
                     interval = setInterval(() => {
-                        if (currentBody.position.x - currentFruit.radius > COLLISION_MIN_X)
+                        if (currentBody.position.x - currentFruit.radius > COLLISION_MIN_X) {
                             Body.setPosition(currentBody, {
                                 x: currentBody.position.x - 1,
                                 y: currentBody.position.y,
                             });
+                        }
                     }, 5);
                     break;
                 case 'KeyD':
                 case 'ArrowRight':
                     if (interval) return;
                     interval = setInterval(() => {
-                        if (currentBody.position.x + currentFruit.radius < COLLISION_MAX_X)
+                        if (currentBody.position.x + currentFruit.radius < COLLISION_MAX_X) {
                             Body.setPosition(currentBody, {
                                 x: currentBody.position.x + 1,
                                 y: currentBody.position.y,
                             });
+                        }
                     }, 5);
                     break;
                 case 'KeyS':
@@ -111,7 +114,6 @@ const Game = memo(({theme}) => {
             }
         };
 
-        /** 충돌 이벤트 **/
         const handleCollision = (event) => {
             event.pairs.forEach((collision) => {
                 if (collision.bodyA.index === collision.bodyB.index) {
@@ -125,17 +127,18 @@ const Game = memo(({theme}) => {
                         collision.collision.supports[0].x,
                         collision.collision.supports[0].y,
                         newFruit.radius, {
-                            render: {
-                                sprite: {
-                                    texture: `${theme}/${newFruit.name}.png`
-                                },
+                        render: {
+                            sprite: {
+                                texture: `${theme}/${newFruit.name}.png`
                             },
-                            index: index + 1,
-                        }
+                        },
+                        index: index + 1,
+                    }
                     );
                     World.add(world, newBody);
                     setScoreState((score) => score + index * 100);
                 }
+
                 if (!disableAction && (collision.bodyA.name === 'topLine' || collision.bodyB.name === 'topLine')) {
                     alert('Game over');
                     disableAction = true;
@@ -147,8 +150,8 @@ const Game = memo(({theme}) => {
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
         Events.on(engine, 'collisionStart', handleCollision);
+
         return () => {
-            /** 컴포넌트가 언마운트되거나 업데이트되기 전에 이벤트 핸들러 등록 해제 **/
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
             Events.off(engine, 'collisionStart', handleCollision);
@@ -157,9 +160,9 @@ const Game = memo(({theme}) => {
 
     return (
         <section ref={containerRef}>
-            <canvas ref={canvasRef}/>
+            <canvas ref={canvasRef} />
         </section>
-    )
+    );
 });
 
 export default Game;
