@@ -12,6 +12,9 @@ React와 자바스크립트로 만든 간단한 웹 게임입니다. 이 프로�
 - React
 - 자바스크립트
 
+## Git
+[https://github.com/SuperRookiee/WaterMelon-Game](https://github.com/SuperRookiee/WaterMelon-Game)
+
 ## Run
 ```
 git clone https://github.com/SuperRookiee/WaterMelon-Game.git
