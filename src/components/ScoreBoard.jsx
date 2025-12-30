@@ -16,6 +16,8 @@ const ScoreBoard = () => {
     }, [bestScore, score, setBestScore]);
 
     useEffect(() => {
+        if (typeof window === 'undefined') return;
+
         localStorage.setItem('bestScore', bestScore.toString());
     }, [bestScore]);
 

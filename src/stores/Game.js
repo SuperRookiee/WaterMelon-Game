@@ -6,11 +6,16 @@ export const scoreState = atom({
     default: 0,
 });
 
+const getInitialBestScore = () => {
+    if (typeof window === 'undefined') return 0;
+
+    const stored = Number(localStorage.getItem('bestScore'));
+    return Number.isFinite(stored) ? stored : 0;
+};
+
 export const bestScoreState = atom({
     key: 'bestScoreState',
-    default: typeof window !== 'undefined'
-        ? Number(localStorage.getItem('bestScore') || 0)
-        : 0,
+    default: getInitialBestScore(),
 });
 
 export const themeState = atom({
