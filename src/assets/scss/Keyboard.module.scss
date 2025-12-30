@@ -18,13 +18,21 @@ $outline: #cccccc;
     align-items: center;
     position: relative;
     padding-bottom: 3px;
-    width: 48px;
-    height: 45px;
-    border-radius: 5px;
-    background-color: #fff;
-    color: #444;
-    border-top: 1px solid $outline;
-    box-shadow: 0 2px 0 1px $outline;
+    width: 52px;
+    height: 48px;
+    border-radius: 12px;
+    background-color: #111827;
+    color: #fff;
+    border: none;
+    box-shadow: 0 10px 25px rgba(17, 24, 39, 0.25);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+  }
+
+  .keyButton:active,
+  .keyButton:focus-visible {
+    transform: translateY(2px);
+    box-shadow: 0 6px 16px rgba(17, 24, 39, 0.18);
+    outline: 2px solid #ff9d66;
   }
 
   & ~ #keyboard {

@@ -1,30 +1,77 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.8);
-  background-color: #242424;
+  font-family: 'Noto Sans KR', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1d202f;
+  background: radial-gradient(circle at 10% 20%, #f7efd7 0, #f1f6ff 25%, #eef2ff 70%);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
 
-main {
-  display: flex;
-  padding: 0 0.5rem;
-
-  & section {
-    width: calc(100% / 3);
-  }
+* {
+  box-sizing: border-box;
 }
 
-@media (max-width: 1000px) {
-  main {
-    flex-direction: column;
-    align-items: center;
-    padding: 0;
+body {
+  margin: 0;
+}
 
-    & section {
-      width: 100%;
-    }
+#water_melon {
+  max-width: 1400px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 1.5rem;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.game-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.game-frame {
+  position: relative;
+  width: 100%;
+  max-width: 720px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 15px 60px rgba(0, 0, 0, 0.08);
+  background: #fffef8;
+}
+
+.game-frame canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.game-frame.is-over::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 24, 43, 0.35);
+  backdrop-filter: blur(2px);
+}
+
+.game-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.2rem;
+  z-index: 2;
+}
+
+@media (max-width: 1100px) {
+  #water_melon {
+    grid-template-columns: 1fr;
+    padding: 1.25rem 1rem 2.5rem;
   }
 }
